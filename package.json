@@ -1,0 +1,27 @@
+{
+  "name": "project-lessons-learned",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    // ... (keep all your existing dependencies)
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --watchAll=false --passWithNoTests",
+    "test:watch": "react-scripts test",
+    "eject": "react-scripts eject",
+    "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
+    "format": "prettier --write src/**/*.{js,jsx,ts,tsx,css,scss,json}",
+    "prepare": "husky install"
+  },
+  "eslintConfig": {
+    // ... (keep your existing eslint config)
+  },
+  "browserslist": {
+    // ... (keep your existing browserslist)
+  },
+  "devDependencies": {
+    // ... (keep all your existing devDependencies)
+  }
+}
