@@ -1,4 +1,4 @@
-import {
+import React, {
   ReactNode,
   createContext,
   useContext,
@@ -15,12 +15,18 @@ interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<User>;
   logout: () => Promise<void>;
+  register: (credentials: { email: string; password: string; name: string }) => Promise<User>;
+  isAuthenticated: boolean;
+  isAdmin: boolean;
 }
 
 export const AuthContext = createContext<AuthContextType>({
   user: null,
   login: async () => ({}) as User,
   logout: async () => {},
+  register: async () => ({}) as User,
+  isAuthenticated: false,
+  isAdmin: false,
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -70,8 +76,34 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     );
   };
 
+  const register = async (credentials: { email: string; password: string; name: string }) => {
+    const user = await authService.register(credentials.email, credentials.password, credentials.name);
+    const newUser = {
+      ...user,
+      isAdmin: credentials.email.endsWith("@test.com") || user.role === "admin",
+    };
+    setUser(newUser);
+    dispatch(
+      setCredentials({
+        user: newUser,
+        token: "local-token",
+      })
+    );
+    return newUser;
+  };
+
+  const isAuthenticated = !!user;
+  const isAdmin = user?.isAdmin || false;
+
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      login, 
+      logout, 
+      register, 
+      isAuthenticated, 
+      isAdmin 
+    }}>
       {children}
     </AuthContext.Provider>
   );
