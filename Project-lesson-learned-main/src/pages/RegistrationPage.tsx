@@ -1,6 +1,5 @@
-import React from "react";
 import { useState } from "react";
-import { useNavigate, Link as RouterLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../features/auth/useAuth";
 import { Button, TextField, Box, Typography, Link } from "@mui/material";
 
@@ -15,7 +14,7 @@ const RegistrationPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await register({ email, password, name });
+      await register(email, password, name);
       navigate("/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed");
@@ -67,7 +66,7 @@ const RegistrationPage = () => {
         </Button>
       </form>
       <Typography sx={{ mt: 2 }}>
-        Already have an account? <Link component={RouterLink} to="/login">Login here</Link>
+        Already have an account? <Link href="/login">Login here</Link>
       </Typography>
     </Box>
   );
