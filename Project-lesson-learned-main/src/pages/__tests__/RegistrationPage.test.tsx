@@ -18,21 +18,21 @@ describe("RegistrationPage", () => {
         <AuthProvider>
           <RegistrationPage />
         </AuthProvider>
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     expect(screen.getByLabelText(/Full Name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Email/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Access Code/i)).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /register/i })
+      screen.getByRole("button", { name: /register/i }),
     ).toBeInTheDocument();
     expect(screen.getByText(/login here/i)).toBeInTheDocument();
   });
 
   it("should display error message on registration failure", async () => {
     (authService.register as jest.Mock).mockRejectedValue(
-      new Error("Email already registered")
+      new Error("Email already registered"),
     );
 
     render(
@@ -40,7 +40,7 @@ describe("RegistrationPage", () => {
         <AuthProvider>
           <RegistrationPage />
         </AuthProvider>
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     userEvent.type(screen.getByLabelText(/Full Name/i), "Test User");
@@ -65,7 +65,7 @@ describe("RegistrationPage", () => {
         <AuthProvider>
           <RegistrationPage />
         </AuthProvider>
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     userEvent.type(screen.getByLabelText(/Full Name/i), "New User");
@@ -77,7 +77,7 @@ describe("RegistrationPage", () => {
       expect(authService.register).toHaveBeenCalledWith(
         "new@example.com",
         "ValidPass123!",
-        "New User"
+        "New User",
       );
     });
   });

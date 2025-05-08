@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Box,
   Button,
@@ -53,7 +52,7 @@ const validationSchema = yup.object({
     .test(
       "password-complexity",
       "Password doesn't meet security requirements",
-      (value) => validatePassword(value || "").length === 0
+      (value) => validatePassword(value || "").length === 0,
     )
     .required("Required"),
 });
