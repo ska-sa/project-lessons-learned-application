@@ -8,9 +8,10 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
-import {Box, Paper, Typography } from "@mui/material";
-import { useAppSelector } from "../../hooks/hooks"; // Ensure this is correctly pointing to your hooks
+import { Paper,Box, Typography } from "@mui/material";
+import { useAppSelector } from "../../hooks/hooks";
 import { selectAllProjects } from "./projectsSlice";
+
 const COLORS = {
   active: "#2e7d32",
   completed: "#1976d2",
@@ -43,8 +44,18 @@ const ProjectAnalysisChart = () => {
   }, [projects]);
 
   return (
-    <Paper sx={{ p: 2, height: "100%", backgroundColor: "#f9f9f9" }}>
-      <Typography variant="h6" gutterBottom textAlign="center">
+    <Paper
+      sx={{
+        p: 2,
+        height: "100%",
+        backgroundColor: "#f9f9f9",
+      }}
+    >
+      <Typography
+        variant="h6"
+        gutterBottom
+        sx={{ textAlign: "center", fontWeight: 600 }}
+      >
         Project Status Distribution
       </Typography>
       {chartData.length === 0 ? (
@@ -56,7 +67,9 @@ const ProjectAnalysisChart = () => {
             alignItems: "center",
           }}
         >
-          <Typography color="text.secondary">No project data available</Typography>
+          <Typography color="text.secondary">
+            No project data available
+          </Typography>
         </Box>
       ) : (
         <ResponsiveContainer width="100%" height={300}>
