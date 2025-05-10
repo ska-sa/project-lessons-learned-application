@@ -1,20 +1,29 @@
-import { Box, Typography } from "@mui/material";
-import { useWordCloud } from "./useWordCloud";
+import React from 'react';
+import { Box, Typography, BoxProps } from '@mui/material';
+import useWordCloud from './useWordCloud';
 
-const words = [
-  { text: "Documentation", value: 38 },
-  { text: "Testing", value: 30 },
-  { text: "Communication", value: 28 },
-  { text: "Deadlines", value: 25 },
-  { text: "Resources", value: 22 },
-  { text: "Planning", value: 18 },
-  { text: "Review", value: 16 },
-  { text: "Deployment", value: 14 },
-  { text: "Meetings", value: 12 },
-  { text: "Feedback", value: 10 },
-];
+// Define types
+interface WordType {
+  text: string;
+  value: number;
+}
 
-const LessonsWordCloud = () => {
+interface Lesson {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  // Add other required fields based on your data
+}
+
+interface LessonsWordCloudProps extends BoxProps {
+  lessons: Lesson[];
+}
+
+const LessonsWordCloud: React.FC<LessonsWordCloudProps> = ({ lessons }) => {
+  // Process lessons into word cloud data using the custom hook
+  const { words } = useWordCloud(lessons);
+
   return (
     <Box>
       <Typography variant="h6" gutterBottom>
@@ -22,26 +31,26 @@ const LessonsWordCloud = () => {
       </Typography>
       <Box
         sx={{
-          display: "flex",
-          flexWrap: "wrap",
+          display: 'flex',
+          flexWrap: 'wrap',
           gap: 2,
-          justifyContent: "center",
+          justifyContent: 'center',
           p: 2,
         }}
       >
         {words.map((word, index) => (
           <Typography
-            key={index}
+            key={word.text}
             sx={{
               fontSize: `${word.value / 2 + 12}px`,
-              fontWeight: "bold",
-              color: index % 2 === 0 ? "primary.main" : "secondary.main",
+              fontWeight: 'bold',
+              color: index % 2 === 0 ? 'primary.main' : 'secondary.main',
               opacity: 0.8,
-              "&:hover": {
+              '&:hover': {
                 opacity: 1,
-                transform: "scale(1.1)",
+                transform: 'scale(1.1)',
               },
-              transition: "all 0.3s ease",
+              transition: 'all 0.3s ease',
             }}
           >
             {word.text}
