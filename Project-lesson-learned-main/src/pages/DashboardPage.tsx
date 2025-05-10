@@ -7,7 +7,7 @@ import { RootState } from "../store/store";
 import LessonsWordCloud from "../components/dashbord/LessonsWordCloud";
 import ProjectAnalysisChart from "../components/dashbord/ProjectAnalysisChart";
 
-// Define types
+
 interface DashboardStats {
   totalProjects: number;
   activeProjects: number;
