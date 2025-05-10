@@ -1,10 +1,14 @@
+// src/api/api.ts
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || "http://localhost:5000/api",
+  baseURL: "https://sarao-backend.example.com/api ", // Replace with your backend URL
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
-// Add JWT token to requests
+// Interceptor for auth tokens
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
