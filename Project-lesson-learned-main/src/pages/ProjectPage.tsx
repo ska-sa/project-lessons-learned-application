@@ -1,40 +1,27 @@
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
   Paper,
   Grid as MuiGrid,
-  Divider,
-  Tabs,
-  Tab,
+  Button,
+  IconButton,
+  Chip,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
   TextField,
-  Button,
-  IconButton,
-  Chip,
-  Avatar,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Badge,
-  Switch,
-  Stack,
-  LinearProgress,
-  useTheme,
-  Card,
-  CardContent,
-  CardHeader,
   CircularProgress,
-} from "@mui/material";
-import { DataGrid, GridColDef, GridToolbar } from "@mui/x-data-grid";
+  Card,
+  CardHeader,
+  CardContent,
+  useTheme,
+} from '@mui/material';
+import { DataGrid, GridColDef, GridToolbar } from '@mui/x-data-grid';
 import {
   Add as AddIcon,
   Search as SearchIcon,
-  FilterList as FilterIcon,
-  Refresh as RefreshIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
   Visibility as ViewIcon,
@@ -42,24 +29,17 @@ import {
   StarBorder as StarBorderIcon,
   CheckCircle as ActiveIcon,
   CheckCircle as CheckCircleIcon,
-  Block as InactiveIcon,
   Warning as AtRiskIcon,
   Folder as ProjectIcon,
   Group as TeamIcon,
-  CalendarToday as DateIcon,
-  ArrowUpward as HighPriorityIcon,
-  ArrowDownward as LowPriorityIcon,
-  TrendingUp as TrendingIcon,
-  Email as EmailIcon,
-  AdminPanelSettings as AdminIcon,
-  Person as UserIcon,
-  BarChart as ChartIcon,
   List as ListIcon,
   Lock as SecureIcon,
-} from "@mui/icons-material";
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import type { GridProps } from "@mui/material/Grid";
+  TrendingUp as TrendingIcon,
+  ArrowUpward as HighPriorityIcon,
+  ArrowDownward as LowPriorityIcon,
+} from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import type { GridProps } from '@mui/material/Grid';
 
 interface CustomGridProps extends GridProps {
   item?: boolean;
@@ -70,18 +50,18 @@ interface CustomGridProps extends GridProps {
   xl?: number;
 }
 
-const Grid = ({ item, component = "div", ...props }: CustomGridProps) => (
+const Grid = ({ item, component = 'div', ...props }: CustomGridProps) => (
   <MuiGrid {...props} component={component} item={item} />
 );
 
 interface Project {
   id: number;
   name: string;
-  status: "active" | "completed" | "on-hold";
+  status: 'active' | 'completed' | 'on-hold';
   startDate: string;
   endDate: string;
   teamSize: number;
-  riskLevel: "low" | "medium" | "high";
+  riskLevel: 'low' | 'medium' | 'high';
   lessonsCount: number;
   isFavorite: boolean;
 }
@@ -101,26 +81,53 @@ interface DashboardStats {
   totalProjects: number;
   activeProjects: number;
   lessonsRecorded: number;
-  trendingCategories: string[];
+}
+
+// Error Boundary Component
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean; error: Error | null }> {
+  state: { hasError: boolean; error: Error | null } = { hasError: false, error: null };
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <Box sx={{ p: 3, textAlign: 'center' }}>
+          <Typography color="error" variant="h6">
+            Something went wrong.
+          </Typography>
+          <Typography>{this.state.error?.message}</Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => window.location.reload()}
+            sx={{ mt: 2 }}
+          >
+            Retry
+          </Button>
+        </Box>
+      );
+    }
+    return this.props.children;
+  }
 }
 
 const ProjectPage = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const [tabValue, setTabValue] = useState(0);
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [categoryFilter, setCategoryFilter] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
   const [projects, setProjects] = useState<Project[]>([]);
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
   const [filteredLessons, setFilteredLessons] = useState<Lesson[]>([]);
-  const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(
-    null,
-  );
+  const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const rowsPerPage = 5;
+  const rowsPerPage = 6;
 
   // Simulate API fetch for projects
   useEffect(() => {
@@ -136,56 +143,56 @@ const ProjectPage = () => {
         const mockProjects: Project[] = [
           {
             id: 1,
-            name: "Vehicle Inspection System",
-            status: "active",
-            startDate: "2023-01-15",
-            endDate: "2023-12-31",
+            name: 'Vehicle Inspection System',
+            status: 'active',
+            startDate: '2023-01-15',
+            endDate: '2023-12-31',
             teamSize: 8,
-            riskLevel: "medium",
+            riskLevel: 'medium',
             lessonsCount: 12,
             isFavorite: true,
           },
           {
             id: 2,
-            name: "Retrospective Tracker",
-            status: "active",
-            startDate: "2023-03-10",
-            endDate: "2023-11-30",
+            name: 'Retrospective Tracker',
+            status: 'active',
+            startDate: '2023-03-10',
+            endDate: '2023-11-30',
             teamSize: 5,
-            riskLevel: "low",
+            riskLevel: 'low',
             lessonsCount: 8,
             isFavorite: false,
           },
           {
             id: 3,
-            name: "Admin Portal Redesign",
-            status: "completed",
-            startDate: "2022-11-01",
-            endDate: "2023-05-15",
+            name: 'Admin Portal Redesign',
+            status: 'completed',
+            startDate: '2022-11-01',
+            endDate: '2023-05-15',
             teamSize: 6,
-            riskLevel: "high",
+            riskLevel: 'high',
             lessonsCount: 15,
             isFavorite: true,
           },
           {
             id: 4,
-            name: "Notification Service",
-            status: "on-hold",
-            startDate: "2023-04-20",
-            endDate: "2023-10-15",
+            name: 'Notification Service',
+            status: 'on-hold',
+            startDate: '2023-04-20',
+            endDate: '2023-10-15',
             teamSize: 3,
-            riskLevel: "high",
+            riskLevel: 'high',
             lessonsCount: 5,
             isFavorite: false,
           },
           {
             id: 5,
-            name: "Data Analytics Dashboard",
-            status: "active",
-            startDate: "2023-02-01",
-            endDate: "2023-09-30",
+            name: 'Data Analytics Dashboard',
+            status: 'active',
+            startDate: '2023-02-01',
+            endDate: '2023-09-30',
             teamSize: 7,
-            riskLevel: "medium",
+            riskLevel: 'medium',
             lessonsCount: 10,
             isFavorite: false,
           },
@@ -196,57 +203,52 @@ const ProjectPage = () => {
           {
             id: 1,
             projectId: 1,
-            projectName: "Vehicle Inspection System",
-            category: "Testing",
-            description:
-              "Need to implement more rigorous testing for edge cases in vehicle inspection workflow",
-            dateRecorded: "2023-05-10",
+            projectName: 'Vehicle Inspection System',
+            category: 'Testing',
+            description: 'Need to implement more rigorous testing for edge cases in vehicle inspection workflow',
+            dateRecorded: '2023-05-10',
             isConfidential: false,
-            tags: ["testing", "quality"],
+            tags: ['testing', 'quality'],
           },
           {
             id: 2,
             projectId: 1,
-            projectName: "Vehicle Inspection System",
-            category: "Documentation",
-            description:
-              "API documentation was incomplete which delayed frontend integration",
-            dateRecorded: "2023-04-22",
+            projectName: 'Vehicle Inspection System',
+            category: 'Documentation',
+            description: 'API documentation was incomplete which delayed frontend integration',
+            dateRecorded: '2023-04-22',
             isConfidential: false,
-            tags: ["documentation", "api"],
+            tags: ['documentation', 'api'],
           },
           {
             id: 3,
             projectId: 2,
-            projectName: "Retrospective Tracker",
-            category: "UI/UX",
-            description:
-              "Users found the lesson entry form too complex, needs simplification",
-            dateRecorded: "2023-06-05",
+            projectName: 'Retrospective Tracker',
+            category: 'UI/UX',
+            description: 'Users found the lesson entry form too complex, needs simplification',
+            dateRecorded: '2023-06-05',
             isConfidential: false,
-            tags: ["ui", "ux"],
+            tags: ['ui', 'ux'],
           },
           {
             id: 4,
             projectId: 3,
-            projectName: "Admin Portal Redesign",
-            category: "Security",
-            description:
-              "Need to implement more granular permission controls for admin functions",
-            dateRecorded: "2023-03-18",
+            projectName: 'Admin Portal Redesign',
+            category: 'Security',
+            description: 'Need to implement more granular permission controls for admin functions',
+            dateRecorded: '2023-03-18',
             isConfidential: true,
-            tags: ["security", "admin"],
+            tags: ['security', 'admin'],
           },
           {
             id: 5,
             projectId: 5,
-            projectName: "Data Analytics Dashboard",
-            category: "Performance",
-            description:
-              "Dashboard loading times were unacceptable with large datasets, need optimization",
-            dateRecorded: "2023-05-30",
+            projectName: 'Data Analytics Dashboard',
+            category: 'Performance',
+            description: 'Dashboard loading times were unacceptable with large datasets, need optimization',
+            dateRecorded: '2023-05-30',
             isConfidential: false,
-            tags: ["performance", "optimization"],
+            tags: ['performance', 'optimization'],
           },
         ];
 
@@ -255,7 +257,6 @@ const ProjectPage = () => {
           totalProjects: 5,
           activeProjects: 3,
           lessonsRecorded: 50,
-          trendingCategories: ["Testing", "UI/UX", "Security", "Performance"],
         };
 
         setProjects(mockProjects);
@@ -263,9 +264,9 @@ const ProjectPage = () => {
         setFilteredProjects(mockProjects);
         setFilteredLessons(mockLessons);
         setDashboardStats(mockStats);
-        setLoading(false);
       } catch (err) {
-        setError("Failed to load dashboard data. Please try again later.");
+        setError('Failed to load dashboard data. Please try again later.');
+      } finally {
         setLoading(false);
       }
     };
@@ -282,7 +283,7 @@ const ProjectPage = () => {
       );
     }
 
-    if (statusFilter !== "all") {
+    if (statusFilter !== 'all') {
       filtered = filtered.filter((project) => project.status === statusFilter);
     }
 
@@ -292,19 +293,14 @@ const ProjectPage = () => {
   useEffect(() => {
     let filtered = lessons;
 
-    if (categoryFilter !== "all") {
+    if (categoryFilter !== 'all') {
       filtered = filtered.filter(
-        (lesson) =>
-          lesson.category.toLowerCase() === categoryFilter.toLowerCase(),
+        (lesson) => lesson.category.toLowerCase() === categoryFilter.toLowerCase(),
       );
     }
 
     setFilteredLessons(filtered);
   }, [categoryFilter, lessons]);
-
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setTabValue(newValue);
-  };
 
   const handleStatusFilterChange = (event: { target: { value: string } }) => {
     setStatusFilter(event.target.value);
@@ -326,13 +322,13 @@ const ProjectPage = () => {
 
   const getStatusChip = (status: string) => {
     const statusMap = {
-      active: { color: "success", icon: <ActiveIcon /> },
-      completed: { color: "primary", icon: <CheckCircleIcon /> },
-      "on-hold": { color: "warning", icon: <AtRiskIcon /> },
+      active: { color: 'success', icon: <ActiveIcon /> },
+      completed: { color: 'primary', icon: <CheckCircleIcon /> },
+      'on-hold': { color: 'warning', icon: <AtRiskIcon /> },
     };
 
     const statusConfig = statusMap[status as keyof typeof statusMap] || {
-      color: "default",
+      color: 'default',
       icon: null,
     };
 
@@ -349,13 +345,13 @@ const ProjectPage = () => {
 
   const getRiskChip = (riskLevel: string) => {
     const riskMap = {
-      low: { color: "success", icon: <LowPriorityIcon /> },
-      medium: { color: "warning", icon: <TrendingIcon /> },
-      high: { color: "error", icon: <HighPriorityIcon /> },
+      low: { color: 'success', icon: <LowPriorityIcon /> },
+      medium: { color: 'warning', icon: <TrendingIcon /> },
+      high: { color: 'error', icon: <HighPriorityIcon /> },
     };
 
     const riskConfig = riskMap[riskLevel as keyof typeof riskMap] || {
-      color: "default",
+      color: 'default',
       icon: null,
     };
 
@@ -372,9 +368,10 @@ const ProjectPage = () => {
 
   const projectColumns: GridColDef[] = [
     {
-      field: "isFavorite",
-      headerName: "",
+      field: 'isFavorite',
+      headerName: '',
       width: 60,
+      minWidth: 50,
       sortable: false,
       renderCell: (params) => (
         <IconButton onClick={() => toggleFavorite(params.row.id)} size="small">
@@ -387,43 +384,48 @@ const ProjectPage = () => {
       ),
     },
     {
-      field: "name",
-      headerName: "Project Name",
-      width: 200,
+      field: 'name',
+      headerName: 'Project Name',
+      flex: 1,
+      minWidth: 150,
       renderCell: (params) => (
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <ProjectIcon color="primary" />
-          {params.row.name}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, whiteSpace: 'normal', wordBreak: 'break-word' }}>
+          <ProjectIcon color="primary" fontSize="small" />
+          <Typography variant="body2">{params.row.name}</Typography>
         </Box>
       ),
     },
     {
-      field: "status",
-      headerName: "Status",
-      width: 120,
+      field: 'status',
+      headerName: 'Status',
+      flex: 0.5,
+      minWidth: 100,
       renderCell: (params) => getStatusChip(params.value),
     },
     {
-      field: "riskLevel",
-      headerName: "Risk Level",
-      width: 120,
+      field: 'riskLevel',
+      headerName: 'Risk Level',
+      flex: 0.5,
+      minWidth: 100,
       renderCell: (params) => getRiskChip(params.value),
     },
     {
-      field: "teamSize",
-      headerName: "Team Size",
-      width: 100,
+      field: 'teamSize',
+      headerName: 'Team',
+      flex: 0.4,
+      minWidth: 80,
       renderCell: (params) => (
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <TeamIcon color="action" />
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <TeamIcon color="action" fontSize="small" />
           {params.value}
         </Box>
       ),
     },
     {
-      field: "lessonsCount",
-      headerName: "Lessons",
-      width: 100,
+      field: 'lessonsCount',
+      headerName: 'Lessons',
+      flex: 0.4,
+      minWidth: 80,
       renderCell: (params) => (
         <Button
           variant="outlined"
@@ -436,77 +438,85 @@ const ProjectPage = () => {
       ),
     },
     {
-      field: "actions",
-      type: "actions",
-      width: 120,
-      getActions: (params) => [
-        <IconButton
-          color="primary"
-          onClick={() => navigate(`/projects/${params.id}`)}
-        >
-          <EditIcon />
-        </IconButton>,
-        <IconButton
-          color="error"
-          onClick={() =>
-            setProjects(projects.filter((project) => project.id !== params.id))
-          }
-        >
-          <DeleteIcon />
-        </IconButton>,
-        <IconButton
-          color="info"
-          onClick={() => navigate(`/projects/${params.id}/retrospective`)}
-        >
-          <ViewIcon />
-        </IconButton>,
-      ],
+      field: 'actions',
+      headerName: 'Actions',
+      flex: 0.6,
+      minWidth: 120,
+      renderCell: (params) => (
+        <Box sx={{ display: 'flex', gap: 0.5 }}>
+          <IconButton
+            color="primary"
+            size="small"
+            onClick={() => navigate(`/projects/${params.row.id}`)}
+            title="Edit"
+          >
+            <EditIcon fontSize="small" />
+          </IconButton>
+          <IconButton
+            color="error"
+            size="small"
+            onClick={() =>
+              setProjects(projects.filter((project) => project.id !== params.row.id))
+            }
+            title="Delete"
+          >
+            <DeleteIcon fontSize="small" />
+          </IconButton>
+          <IconButton
+            color="info"
+            size="small"
+            onClick={() => navigate(`/projects/${params.row.id}/retrospective`)}
+            title="View"
+          >
+            <ViewIcon fontSize="small" />
+          </IconButton>
+        </Box>
+      ),
     },
   ];
 
   const lessonColumns: GridColDef[] = [
     {
-      field: "projectName",
-      headerName: "Project",
-      width: 180,
+      field: 'projectName',
+      headerName: 'Project',
+      flex: 1,
+      minWidth: 120,
       renderCell: (params) => (
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <ProjectIcon color="primary" fontSize="small" />
-          {params.value}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, whiteSpace: 'normal', wordBreak: 'break-word' }}>
+          <ProjectIcon sx={{ fontSize: { xs: 20, sm: 24 }, color: 'primary.main' }} />
+          <Typography variant="body2" sx={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>
+            {params.value}
+          </Typography>
         </Box>
       ),
     },
     {
-      field: "category",
-      headerName: "Category",
-      width: 120,
+      field: 'category',
+      headerName: 'Category',
+      flex: 0.5,
+      minWidth: 80,
       renderCell: (params) => (
-        <Chip
-          label={params.value}
-          color="primary"
-          size="small"
-          variant="outlined"
-        />
+        <Chip label={params.value} color="primary" size="small" variant="outlined" />
       ),
     },
     {
-      field: "description",
-      headerName: "Lesson Learned",
-      width: 300,
+      field: 'description',
+      headerName: 'Lesson Learned',
+      flex: 1.5,
+      minWidth: 150,
       renderCell: (params) => (
-        <Typography variant="body2">
-          {params.value.length > 100
-            ? `${params.value.substring(0, 100)}...`
-            : params.value}
+        <Typography variant="body2" sx={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>
+          {params.value}
         </Typography>
       ),
     },
     {
-      field: "tags",
-      headerName: "Tags",
-      width: 200,
+      field: 'tags',
+      headerName: 'Tags',
+      flex: 0.8,
+      minWidth: 100,
       renderCell: (params) => (
-        <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
+        <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
           {params.value.map((tag: string, index: number) => (
             <Chip key={index} label={tag} size="small" variant="outlined" />
           ))}
@@ -514,16 +524,18 @@ const ProjectPage = () => {
       ),
     },
     {
-      field: "dateRecorded",
-      headerName: "Date Recorded",
-      width: 120,
+      field: 'dateRecorded',
+      headerName: 'Date',
+      flex: 0.5,
+      minWidth: 80,
     },
     {
-      field: "isConfidential",
-      headerName: "Confidential",
-      width: 100,
+      field: 'isConfidential',
+      headerName: 'Confidential',
+      flex: 0.4,
+      minWidth: 80,
       renderCell: (params) =>
-        params.value ? <SecureIcon color="error" /> : <span>-</span>,
+        params.value ? <SecureIcon color="error" fontSize="small" /> : <span>-</span>,
     },
   ];
 
@@ -531,15 +543,17 @@ const ProjectPage = () => {
     return (
       <Box
         sx={{
-          p: 3,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
+          p: { xs: 2, sm: 3 },
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '100vh',
+          width: '100%',
+          maxWidth: '100%',
         }}
       >
-        <Paper sx={{ p: 3, textAlign: "center" }}>
-          <Typography color="error" variant="h5" gutterBottom>
+        <Paper sx={{ p: 3, textAlign: 'center', width: '100%', maxWidth: { xs: '90%', sm: '600px' } }}>
+          <Typography color="error" variant="h6" gutterBottom>
             Error Loading Dashboard
           </Typography>
           <Typography variant="body1" gutterBottom>
@@ -559,203 +573,326 @@ const ProjectPage = () => {
   }
 
   return (
-    <Box sx={{ p: 3 }}>
+    <ErrorBoundary>
       <Box
         sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 3,
+          p: { xs: 2, sm: 3 },
+          minHeight: '100vh',
+          width: '100%',
+          maxWidth: '100%',
+          boxSizing: 'border-box',
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
-        <Typography variant="h4" component="h1" gutterBottom>
-          Project Retrospective Dashboard
-        </Typography>
-        <Box sx={{ display: "flex", gap: 2 }}>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => navigate("/projects/new")}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            justifyContent: 'space-between',
+            alignItems: { xs: 'stretch', sm: 'center' },
+            mb: { xs: 2, sm: 3 },
+            gap: 2,
+          }}
+        >
+          <Typography
+            variant="h4"
+            component="h1"
+            sx={{
+              fontSize: { xs: '1.5rem', sm: '2.125rem' },
+              mb: { xs: 2, sm: 0 },
+            }}
           >
-            New Project
-          </Button>
-          <Button
-            variant="outlined"
-            startIcon={<AddIcon />}
-            onClick={() => navigate("/lessons/new")}
+            Project Retrospective Dashboard
+          </Typography>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: { xs: 'column', sm: 'row' },
+              gap: 1,
+              width: { xs: '100%', sm: 'auto' },
+            }}
           >
-            Add Lesson
-          </Button>
-        </Box>
-      </Box>
-
-      {loading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
-          <CircularProgress />
-        </Box>
-      ) : (
-        <>
-          {/* Dashboard Stats Cards */}
-          <Grid container spacing={3} sx={{ mb: 3 }}>
-            <Grid item xs={12} sm={6} md={3}>
-              <Card>
-                <CardHeader
-                  title="Total Projects"
-                  avatar={<ProjectIcon color="primary" />}
-                />
-                <CardContent>
-                  <Typography variant="h4">
-                    {dashboardStats?.totalProjects || 0}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <Card>
-                <CardHeader
-                  title="Active Projects"
-                  avatar={<ActiveIcon color="success" />}
-                />
-                <CardContent>
-                  <Typography variant="h4">
-                    {dashboardStats?.activeProjects || 0}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <Card>
-                <CardHeader
-                  title="Lessons Recorded"
-                  avatar={<ListIcon color="info" />}
-                />
-                <CardContent>
-                  <Typography variant="h4">
-                    {dashboardStats?.lessonsRecorded || 0}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <Card>
-                <CardHeader
-                  title="Trending Categories"
-                  avatar={<TrendingIcon color="warning" />}
-                />
-                <CardContent>
-                  <Stack spacing={1}>
-                    {dashboardStats?.trendingCategories.map(
-                      (category, index) => (
-                        <Chip key={index} label={category} variant="outlined" />
-                      ),
-                    )}
-                  </Stack>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
-
-          {/* Projects Section */}
-          <Paper sx={{ p: 3, mb: 3 }}>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                mb: 2,
-              }}
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => navigate('/projects/new')}
+              sx={{ width: { xs: '100%', sm: 'auto' }, mb: { xs: 1, sm: 0 } }}
             >
-              <Typography variant="h6" component="h2">
-                Projects
-              </Typography>
-              <Box sx={{ display: "flex", gap: 2 }}>
-                <TextField
-                  size="small"
-                  placeholder="Search projects..."
-                  InputProps={{
-                    startAdornment: <SearchIcon color="action" />,
-                  }}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                <FormControl size="small" sx={{ minWidth: 120 }}>
-                  <InputLabel>Status</InputLabel>
-                  <Select
-                    value={statusFilter}
-                    label="Status"
-                    onChange={handleStatusFilterChange}
-                  >
-                    <MenuItem value="all">All Statuses</MenuItem>
-                    <MenuItem value="active">Active</MenuItem>
-                    <MenuItem value="completed">Completed</MenuItem>
-                    <MenuItem value="on-hold">On Hold</MenuItem>
-                  </Select>
-                </FormControl>
-              </Box>
-            </Box>
-
-            <DataGrid
-              rows={filteredProjects}
-              columns={projectColumns}
-              pageSizeOptions={[5, 10, 25]}
-              initialState={{
-                pagination: {
-                  paginationModel: { page: 0, pageSize: rowsPerPage },
-                },
-              }}
-              slots={{ toolbar: GridToolbar }}
-              sx={{ height: 400 }}
-            />
-          </Paper>
-
-          {/* Lessons Learned Section */}
-          <Paper sx={{ p: 3 }}>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                mb: 2,
-              }}
+              New Project
+            </Button>
+            <Button
+              variant="outlined"
+              startIcon={<AddIcon />}
+              onClick={() => navigate('/lessons/new')}
+              sx={{ width: { xs: '100%', sm: 'auto' } }}
             >
-              <Typography variant="h6" component="h2">
-                Recent Lessons Learned
-              </Typography>
-              <FormControl size="small" sx={{ minWidth: 180 }}>
-                <InputLabel>Filter by Category</InputLabel>
-                <Select
-                  value={categoryFilter}
-                  label="Filter by Category"
-                  onChange={handleCategoryFilterChange}
+              Add Lesson
+            </Button>
+          </Box>
+        </Box>
+
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', p: 4, flex: 1 }}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: { xs: 2, sm: 3 } }}>
+            {/* Dashboard Stats Cards */}
+            <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: { xs: 2, sm: 3 } }}>
+              <Grid item xs={12} sm={6} md={4}>
+                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                  <CardHeader
+                    title="Total Projects"
+                    avatar={<ProjectIcon color="primary" />}
+                    titleTypographyProps={{ variant: 'h6', fontSize: { xs: '1rem', sm: '1.25rem' } }}
+                  />
+                  <CardContent sx={{ flex: 1 }}>
+                    <Typography variant="h4" sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}>
+                      {dashboardStats?.totalProjects || 0}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                  <CardHeader
+                    title="Active Projects"
+                    avatar={<ActiveIcon color="success" />}
+                    titleTypographyProps={{ variant: 'h6', fontSize: { xs: '1rem', sm: '1.25rem' } }}
+                  />
+                  <CardContent sx={{ flex: 1 }}>
+                    <Typography variant="h4" sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}>
+                      {dashboardStats?.activeProjects || 0}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                  <CardHeader
+                    title="Lessons Recorded"
+                    avatar={<ListIcon color="info" />}
+                    titleTypographyProps={{ variant: 'h6', fontSize: { xs: '1rem', sm: '1.25rem' } }}
+                  />
+                  <CardContent sx={{ flex: 1 }}>
+                    <Typography variant="h4" sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}>
+                      {dashboardStats?.lessonsRecorded || 0}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Grid>
+
+            {/* Projects Section */}
+            <Paper sx={{ p: { xs: 2, sm: 3 }, width: '100%', boxSizing: 'border-box' }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: { xs: 'column', sm: 'row' },
+                  justifyContent: 'space-between',
+                  alignItems: { xs: 'stretch', sm: 'center' },
+                  mb: 2,
+                  gap: 2,
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  component="h2"
+                  sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }}
                 >
-                  <MenuItem value="all">All Categories</MenuItem>
-                  {Array.from(
-                    new Set(lessons.map((lesson) => lesson.category)),
-                  ).map((category) => (
-                    <MenuItem key={category} value={category}>
-                      {category}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Box>
+                  Projects
+                </Typography>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: { xs: 'column', sm: 'row' },
+                    gap: 1,
+                    width: { xs: '100%', sm: 'auto' },
+                  }}
+                >
+                  <TextField
+                    size="small"
+                    placeholder="Search projects..."
+                    InputProps={{
+                      startAdornment: <SearchIcon color="action" />,
+                    }}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    sx={{
+                      width: { xs: '100%', sm: 200 },
+                      mb: { xs: 1, sm: 0 },
+                    }}
+                  />
+                  <FormControl
+                    size="small"
+                    sx={{
+                      width: { xs: '100%', sm: 120 },
+                      minWidth: 120,
+                    }}
+                  >
+                    <InputLabel>Status</InputLabel>
+                    <Select
+                      value={statusFilter}
+                      label="Status"
+                      onChange={handleStatusFilterChange}
+                    >
+                      <MenuItem value="all">All Statuses</MenuItem>
+                      <MenuItem value="active">Active</MenuItem>
+                      <MenuItem value="completed">Completed</MenuItem>
+                      <MenuItem value="on-hold">On Hold</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Box>
+              </Box>
 
-            <DataGrid
-              rows={filteredLessons}
-              columns={lessonColumns}
-              pageSizeOptions={[5, 10, 25]}
-              initialState={{
-                pagination: {
-                  paginationModel: { page: 0, pageSize: rowsPerPage },
-                },
-              }}
-              slots={{ toolbar: GridToolbar }}
-              sx={{ height: 400 }}
-            />
-          </Paper>
-        </>
-      )}
-    </Box>
+              {filteredProjects.length === 0 ? (
+                <Typography
+                  variant="body1"
+                  sx={{
+                    p: 2,
+                    textAlign: 'center',
+                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                  }}
+                >
+                  No projects found.
+                </Typography>
+              ) : (
+                <DataGrid
+                  rows={filteredProjects}
+                  columns={projectColumns}
+                  pageSizeOptions={[5, 10, 25]}
+                  initialState={{
+                    pagination: {
+                      paginationModel: { page: 0, pageSize: rowsPerPage },
+                    },
+                  }}
+                  slots={{ toolbar: GridToolbar }}
+                  sx={{
+                    width: '100%',
+                    maxWidth: '100%',
+                    overflowX: 'auto',
+                    '& .MuiDataGrid-root': {
+                      fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                    },
+                    '& .MuiDataGrid-cell': {
+                      padding: { xs: '4px', sm: '8px' },
+                    },
+                    '& .MuiDataGrid-columnHeaderTitle': {
+                      fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                    },
+                  }}
+                />
+              )}
+            </Paper>
+
+            {/* Lessons Learned Section */}
+            <Paper sx={{ p: { xs: 2, sm: 3 }, width: '100%', boxSizing: 'border-box' }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: { xs: 'column', sm: 'row' },
+                  justifyContent: 'space-between',
+                  alignItems: { xs: 'stretch', sm: 'center' },
+                  mb: 2,
+                  gap: 2,
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  component="h2"
+                  sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }}
+                >
+                  Recent Lessons Learned
+                </Typography>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: { xs: 'column', sm: 'row' },
+                    gap: 1,
+                    width: { xs: '100%', sm: 'auto' },
+                  }}
+                >
+                  <TextField
+                    size="small"
+                    placeholder="Search lessons..."
+                    InputProps={{
+                      startAdornment: <SearchIcon color="action" />,
+                    }}
+                    sx={{
+                      width: { xs: '100%', sm: 200 },
+                      mb: { xs: 1, sm: 0 },
+                    }}
+                  />
+                  <FormControl
+                    size="small"
+                    sx={{
+                      width: { xs: '100%', sm: 180 },
+                      minWidth: 120,
+                    }}
+                  >
+                    <InputLabel>Filter by Category</InputLabel>
+                    <Select
+                      value={categoryFilter}
+                      label="Filter by Category"
+                      onChange={handleCategoryFilterChange}
+                    >
+                      <MenuItem value="all">All Categories</MenuItem>
+                      {Array.from(new Set(lessons.map((lesson) => lesson.category))).map(
+                        (category) => (
+                          <MenuItem key={category} value={category}>
+                            {category}
+                          </MenuItem>
+                        ),
+                      )}
+                    </Select>
+                  </FormControl>
+                </Box>
+              </Box>
+
+              {filteredLessons.length === 0 ? (
+                <Typography
+                  variant="body1"
+                  sx={{
+                    p: 2,
+                    textAlign: 'center',
+                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                  }}
+                >
+                  No lessons found.
+                </Typography>
+              ) : (
+                <DataGrid
+                  rows={filteredLessons}
+                  columns={lessonColumns}
+                  pageSizeOptions={[5, 10, 25]}
+                  initialState={{
+                    pagination: {
+                      paginationModel: { page: 0, pageSize: rowsPerPage },
+                    },
+                  }}
+                  slots={{ toolbar: GridToolbar }}
+                  sx={{
+                    width: '100%',
+                    maxWidth: '100%',
+                    overflowX: 'auto',
+                    '& .MuiDataGrid-root': {
+                      fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                    },
+                    '& .MuiDataGrid-cell': {
+                      padding: { xs: '4px', sm: '8px' },
+                    },
+                    '& .MuiDataGrid-columnHeaderTitle': {
+                      fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                    },
+                  }}
+                />
+              )}
+            </Paper>
+          </Box>
+        )}
+      </Box>
+    </ErrorBoundary>
   );
 };
 
