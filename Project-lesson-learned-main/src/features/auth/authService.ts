@@ -1,86 +1,53 @@
+import axios from "axios";
 import { storeCredentials, clearCredentials } from "./credentialStorage";
 import { User } from "./credentialStorage";
 import { validatePassword } from "../../utils/authPolicy";
 
-const LOCAL_USERS = [
-  {
-    email: "tebogo@test.com",
-    password: "tebogo123",
-    user: {
-      id: "1",
-      name: "Tebogo",
-      role: "frontend",
-      isAdmin: true,
-    },
-  },
-  {
-    email: "anele@frontend.com",
-    password: "anele123",
-    user: {
-      id: "2",
-      name: "Anele",
-      role: "frontend",
-    },
-  },
-  {
-    email: "hluli@frontend.com",
-    password: "hluli123",
-    user: {
-      id: "3",
-      name: "Hluli",
-      role: "frontend",
-    },
-  },
-];
+// Set your API base URL
+const API_BASE_URL = "http://localhost:8000"; // Change this if needed
 
 export const authService = {
   async login(email: string, password: string): Promise<User> {
-    const user = LOCAL_USERS.find(
-      (u) => u.email === email && u.password === password,
-    );
-
-    if (user) {
-      storeCredentials({
-        token: "local-token",
-        user: user.user,
+    try {
+      const response = await axios.post(`${API_BASE_URL}/login`, {
+        email,
+        password,
       });
-      return user.user;
-    }
 
-    clearCredentials();
-    throw new Error("Invalid email or password");
+      const { user, token } = response.data;
+
+      storeCredentials({ user, token });
+      return user;
+    } catch (error: any) {
+      clearCredentials();
+      throw new Error(error.response?.data?.detail || "Login failed");
+    }
   },
 
   async register(email: string, password: string, name: string): Promise<User> {
-    if (LOCAL_USERS.some((u) => u.email === email)) {
-      throw new Error("Email already registered");
-    }
-
     const passwordErrors = validatePassword(password);
     if (passwordErrors.length > 0) {
       throw new Error(passwordErrors.join(", "));
     }
 
-    const newUser = {
-      email,
-      password,
-      user: {
-        id: `${LOCAL_USERS.length + 1}`,
+    try {
+      const response = await axios.post(`${API_BASE_URL}/register`, {
+        email,
+        password,
         name,
-        role: "frontend",
-      },
-    };
+      });
 
-    LOCAL_USERS.push(newUser);
-    storeCredentials({
-      token: "local-token",
-      user: newUser.user,
-    });
+      const { user, token } = response.data;
 
-    return newUser.user;
+      storeCredentials({ user, token });
+      return user;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.detail || "Registration failed");
+    }
   },
 
   async logout(): Promise<void> {
     clearCredentials();
+    // Optionally, you can call the backend logout endpoint if needed
   },
 };

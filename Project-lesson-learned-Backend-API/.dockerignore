@@ -1,0 +1,8 @@
+env/
+
+__pyache__/
+
+*.env
+*.env.*
+env.*
+

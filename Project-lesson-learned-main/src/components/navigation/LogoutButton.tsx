@@ -1,6 +1,6 @@
-import { Button } from '@mui/material';
-import { useAuth } from '../../features/auth/useAuth';
-import { useNavigate } from 'react-router-dom';
+import { Button } from "@mui/material";
+import { useAuth } from "../../features/auth/useAuth";
+import { useNavigate } from "react-router-dom";
 
 const LogoutButton = () => {
   const { logout } = useAuth();
@@ -8,15 +8,11 @@ const LogoutButton = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
-    <Button 
-      color="inherit"
-      onClick={handleLogout}
-      sx={{ ml: 2 }}
-    >
+    <Button color="inherit" onClick={handleLogout} sx={{ ml: 2 }}>
       Logout
     </Button>
   );

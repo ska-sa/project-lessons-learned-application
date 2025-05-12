@@ -16,7 +16,7 @@ const RegistrationPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await register({ email, password, name });
+      await register(email, password, name);
       navigate("/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed");

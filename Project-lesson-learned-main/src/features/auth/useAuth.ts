@@ -12,7 +12,7 @@ interface AuthContextValue {
   user: User | null;
   login: (email: string, password: string) => Promise<User>;
   logout: () => Promise<void>;
-  register: (credentials: RegisterCredentials) => Promise<User>;
+  register: (email: string, password: string, name: string) => Promise<User>;
   isAuthenticated: boolean;
   isAdmin: boolean;
 }
