@@ -1,8 +1,9 @@
 // src/features/auth/ProtectedRoute.tsx
-import { ReactElement } from "react";
+import React, { ReactElement } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { Navigate } from "react-router-dom";
+import { useAuth } from "./AuthProvider";
 
 interface ProtectedRouteProps {
   children: ReactElement;
@@ -14,6 +15,11 @@ export default function ProtectedRoute({
   adminOnly = false,
 }: ProtectedRouteProps) {
   const { user } = useSelector((state: RootState) => state.auth);
+  const { loading } = useAuth();
+
+  if (loading) {
+    return null; // or a loading spinner component
+  }
 
   if (!user) {
     return <Navigate to="/login" replace />;

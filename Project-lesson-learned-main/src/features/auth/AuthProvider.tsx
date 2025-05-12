@@ -1,4 +1,4 @@
-import {
+import React, {
   ReactNode,
   createContext,
   useContext,
@@ -18,6 +18,7 @@ interface AuthContextType {
   register: (email: string, password: string, name: string) => Promise<User>;
   isAuthenticated: boolean;
   isAdmin: boolean;
+  loading: boolean;
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -27,12 +28,14 @@ export const AuthContext = createContext<AuthContextType>({
   register: async () => ({}) as User,
   isAuthenticated: false,
   isAdmin: false,
+  loading: true,
 });
 
 export const useAuth = () => useContext(AuthContext);
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -46,10 +49,27 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         }),
       );
     }
+    setLoading(false);
   }, [dispatch]);
 
   const login = async (email: string, password: string) => {
     const user = await authService.login(email, password);
+    const testUser = {
+      ...user,
+      isAdmin: email.endsWith("@test.com") || user.role === "admin",
+    };
+    setUser(testUser);
+    dispatch(
+      setCredentials({
+        user: testUser,
+        token: "local-token",
+      }),
+    );
+    return testUser;
+  };
+
+  const register = async (email: string, password: string, name: string) => {
+    const user = await authService.register(email, password, name);
     const testUser = {
       ...user,
       isAdmin: email.endsWith("@test.com") || user.role === "admin",
@@ -75,20 +95,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  const register = async (email: string, password: string, name: string) => {
-    const newUser = await authService.register(email, password, name);
-    setUser(newUser);
-    dispatch(
-      setCredentials({
-        user: newUser,
-        token: "local-token",
-      }),
-    );
-    return newUser;
-  };
-
-  const isAuthenticated = !!user;
-  const isAdmin = !!user?.isAdmin;
+  const isAuthenticated = user !== null;
+  const isAdmin = user?.isAdmin === true;
 
   return (
     <AuthContext.Provider
@@ -99,6 +107,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         register,
         isAuthenticated,
         isAdmin,
+        loading,
       }}
     >
       {children}

@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Box,
   Button,
@@ -11,6 +12,8 @@ import {
   Fade,
   styled,
   Link,
+  Divider,
+  Stack,
 } from "@mui/material";
 import {
   Lock,
@@ -18,13 +21,14 @@ import {
   VisibilityOff,
   Science,
   SatelliteAlt,
+  Google,
 } from "@mui/icons-material";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../features/auth/useAuth";
 import { useState } from "react";
-import { passwordPolicy, validatePassword } from "../utils/authPolicy";
+import { validatePassword } from "../utils/authPolicy";
 
 const SciGlassCard = styled(Paper)(({ theme }) => ({
   background: "rgba(255, 255, 255, 0.88)",
@@ -88,6 +92,7 @@ export default function LoginPage() {
     <Box
       sx={{
         minHeight: "100vh",
+        width: "100vw",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -266,6 +271,45 @@ export default function LoginPage() {
                   }}
                 >
                   {isSubmitting ? "VERIFYING CREDENTIALS..." : "AUTHENTICATE"}
+                </Button>
+
+                <Stack direction="row" alignItems="center" sx={{ my: 2 }}>
+                  <Divider sx={{ flex: 1, bgcolor: theme.palette.grey[300] }} />
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ px: 2, fontWeight: 500 }}
+                  >
+                    Or sign in with
+                  </Typography>
+                  <Divider sx={{ flex: 1, bgcolor: theme.palette.grey[300] }} />
+                </Stack>
+
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  startIcon={<Google sx={{ fontSize: { xs: 20, sm: 24 } }} />}
+                  sx={{
+                    py: { xs: 1.25, sm: 1.5 },
+                    borderRadius: 2,
+                    fontSize: { xs: "0.9rem", sm: "0.95rem" },
+                    fontWeight: 500,
+                    textTransform: "none",
+                    letterSpacing: "0.5px",
+                    bgcolor: "white",
+                    border: `1px solid ${theme.palette.grey[200]}`,
+                    color: theme.palette.text.primary,
+                    "&:hover": {
+                      transform: "translateY(-1px)",
+                      boxShadow: `0 4px 12px ${theme.palette.grey[400]}40`,
+                      borderColor: theme.palette.grey[300],
+                      bgcolor: theme.palette.grey[50],
+                    },
+                    transition: "all 0.3s ease",
+                    mb: 2,
+                  }}
+                >
+                  Sign in with Google
                 </Button>
               </Box>
 
