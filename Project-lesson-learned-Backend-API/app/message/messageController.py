@@ -3,14 +3,14 @@ from sqlalchemy.orm import Session
 from typing import List
 from uuid import UUID
 
-from app.message.messageModel import Message  # if needed
+from app.message.messageModel import Message  
 from app.message.messageSchema import MessageCreate, MessageResponse
 from app.message.messageService import create_message, get_messages_for_user, mark_message_as_read
 from app.database import SessionLocal
 
 router = APIRouter(prefix="/messages", tags=["Messages"])
 
-# Include get_db() locally
+
 def get_db():
     db = SessionLocal()
     try:

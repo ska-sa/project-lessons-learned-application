@@ -19,20 +19,20 @@ router = APIRouter(
     tags=["auth"]
 )
 
-# Load environment variables
+
 load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY", "fallback_secret_key")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
 
-# Password hashing
+
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# OAuth2 scheme
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 
 
-# Database session dependency
+
 def get_db():
     db = SessionLocal()
     try:
@@ -41,7 +41,7 @@ def get_db():
         db.close()
 
 
-# Utility functions
+
 def hash_password(password: str) -> str:
     return bcrypt_context.hash(password)
 
@@ -57,7 +57,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
-# Get current user from token
+
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -79,7 +79,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     return user
 
 
-# Registration Endpoint
+
 @router.post("/register")
 def register_user(
     name: str,
@@ -104,7 +104,7 @@ def register_user(
     return {"message": "User registered successfully", "user_id": str(new_user.user_id)}
 
 
-# Login Endpoint
+
 @router.post("/token")
 def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == form_data.username).first()

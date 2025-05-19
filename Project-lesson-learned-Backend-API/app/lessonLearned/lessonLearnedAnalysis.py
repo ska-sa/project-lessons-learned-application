@@ -12,7 +12,7 @@ from app.database import SessionLocal
 
 router = APIRouter()
 
-# Define get_db inside this file
+
 def get_db():
     db = SessionLocal()
     try:
@@ -22,7 +22,7 @@ def get_db():
 
 @router.get("/lessons/analysis")
 def analyze_lessons(db: Session = Depends(get_db)):
-    # Your existing logic here ...
+   
     lessons = db.query(LessonLearned.description, LessonLearned.created_at).all()
 
     all_text = " ".join(lesson.description for lesson, _ in lessons if lesson)

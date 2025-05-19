@@ -37,13 +37,13 @@ async def getLesson(lessonId: UUID, db: Session = Depends(getDb)):
         raise HTTPException(status_code=404, detail="Lesson not found")
     return lesson
 
-@router.put("/{lessonId}", response_model=LessonLearnedResponse)  # ✅ fixed this line
+@router.put("/{lessonId}", response_model=LessonLearnedResponse) 
 async def updateLessonEndpoint(lessonId: UUID, lesson: LessonLearnedUpdate, db: Session = Depends(getDb)):
     update = updateLesson(db, lessonId, lesson)
     if not update:
         raise HTTPException(status_code=404, detail="Lesson not found")
     return update
 
-@router.get("/", response_model=List[LessonLearnedResponse])  # ✅ fixed this line
+@router.get("/", response_model=List[LessonLearnedResponse])  
 async def listLessons(db: Session = Depends(getDb)):
     return getAllLesson(db)
