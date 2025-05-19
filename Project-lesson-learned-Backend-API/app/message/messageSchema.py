@@ -7,7 +7,7 @@ class MessageBase(BaseModel):
     receiver_id: UUID
 
 class MessageCreate(MessageBase):
-    sender_id: UUID  # usually injected from logged-in user 
+    sender_id: UUID  
 
 class MessageResponse(BaseModel):
     message_id: UUID

@@ -9,7 +9,7 @@ from app.database import SessionLocal
 
 router = APIRouter(prefix="/subcategories", tags=["SubCategories"])
 
-# Local DB dependency
+
 def get_db():
     db = SessionLocal()
     try:

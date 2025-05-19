@@ -30,6 +30,6 @@ app.include_router(auditlog)
 app.include_router(message)
 app.include_router(subcategory)
 # Optional: Root endpoint
-#@app.get("/")
-#def read_root():
-#    return {"message": "Welcome to the Project Lessons Learned API"}
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to the Project Lessons Learned API"}

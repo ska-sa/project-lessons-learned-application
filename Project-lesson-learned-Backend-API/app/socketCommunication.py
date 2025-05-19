@@ -6,11 +6,10 @@ from datetime import datetime
 
 from app.message.messageModel import Message
 from app.user.userModel import User
-from app.database import SessionLocal  # Only import SessionLocal, not get_db
+from app.database import SessionLocal  
 
 router = APIRouter()
 
-# --- Local DB Dependency ---
 def get_db():
     db = SessionLocal()
     try:
@@ -18,7 +17,7 @@ def get_db():
     finally:
         db.close()
 
-# --- Connection Manager ---
+
 class ConnectionManager:
     def __init__(self):
         self.active_connections: Dict[str, List[WebSocket]] = {}
@@ -44,7 +43,7 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
-# --- WebSocket Endpoint ---
+
 @router.websocket("/ws/{user_id}")
 async def websocket_endpoint(websocket: WebSocket, user_id: str, db: Session = Depends(get_db)):
     await manager.connect(websocket, user_id)
@@ -54,7 +53,7 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str, db: Session = D
             to = data.get("to")
             content = data.get("message")
 
-            # Save to DB
+           
             message_db = Message(
                 sender_id=UUID(user_id),
                 receiver_id=UUID(to),
@@ -65,9 +64,9 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str, db: Session = D
             db.add(message_db)
             db.commit()
 
-            # Send to receiver
+            
             sent = await manager.send_to_user(to, f"[From {user_id}] {content}")
             if not sent:
-                pass  # Optional: fallback email
+                pass  
     except WebSocketDisconnect:
         manager.disconnect(websocket, user_id)
